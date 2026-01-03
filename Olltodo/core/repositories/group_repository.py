@@ -1,7 +1,8 @@
 from core import models
 from core.domain.entities.group import Group
+from core.repositories.interfaces import IRepository
 
-class GroupRepository:
+class GroupRepository(IRepository):
     def _mapping(self, group_orm:models.Group) -> Group:
         return Group(
             id_ = group_orm.id,

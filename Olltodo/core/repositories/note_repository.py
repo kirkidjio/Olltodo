@@ -1,7 +1,8 @@
 from core.domain.entities.note import Note
 from core import models
+from core.repositories.interfaces import IRepositoryForTaskAndNote
 
-class NoteRepository:
+class NoteRepository(IRepositoryForTaskAndNote):
     def _mapping(self, orm_note:models.Note):
         return Note(
             id_ = orm_note.id,
@@ -12,6 +13,9 @@ class NoteRepository:
         
     def get_by_tasklist(self, tasklist_id:int) -> list[Note]:
         return [self._mapping(i) for i in models.Note.objects.filter(tasklist=tasklist_id)]
+        
+    def get(self, note_id):
+        pass
         
     def save(self, entity_note:Note, tasklist_id:int):
         note_orm = None
@@ -26,4 +30,7 @@ class NoteRepository:
         note_orm.content = entity_note.content
         note_orm.creator_id = entity_note.creator
         note_orm.save()
+        
+    def delete(self, note_id):
+        pass
     

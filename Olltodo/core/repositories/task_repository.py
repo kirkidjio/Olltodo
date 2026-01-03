@@ -1,7 +1,8 @@
 from core import models
 from core.domain.entities.task import Task, TaskStatus, TaskPriority
+from core.repositories.interfaces import IRepositoryForTaskAndNote
 
-class TaskRepository:
+class TaskRepository(IRepositoryForTaskAndNote):
         
     def _mapping(self, orm_task:models.Task):
         return Task(
@@ -13,7 +14,9 @@ class TaskRepository:
             title = orm_task.title,
         )
         
-   
+    def get(self, task_id):
+        pass
+    
         
     def get_by_tasklist(self, tasklist_id) -> list[Task]:
         obj = models.Task.objects.filter(tasklist=tasklist_id)
@@ -34,3 +37,7 @@ class TaskRepository:
         orm_task.priority = task.priority
 
         orm_task.save()
+        
+        
+    def delete(self, task_id):
+        pass
