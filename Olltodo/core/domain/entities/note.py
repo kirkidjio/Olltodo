@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from user import User
+
 
 class Note:
-    def __init__(self, id_:int, creator_id:int, title:str, content:str):
+    def __init__(self, creator_id:int, title:str, content:str = None, id_:int = None):
         self._id = id_
         self._creator_id = creator_id
         self._title = title
@@ -31,3 +31,7 @@ class Note:
     @property
     def creator(self):
         return self._creator_id
+        
+    @property
+    def id(self):
+        return self._id

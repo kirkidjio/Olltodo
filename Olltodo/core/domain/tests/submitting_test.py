@@ -4,9 +4,9 @@ import pytest
 
 @pytest.fixture
 def users():
-    leader = User('leader', '12345')
-    performer = User('performer', '12345')
-    stranger = User('stranger', 'qwerty123')
+    leader = 1
+    performer = 2
+    stranger = 3
     
     return leader, performer, stranger
 

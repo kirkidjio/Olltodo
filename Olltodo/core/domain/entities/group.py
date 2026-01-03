@@ -1,17 +1,14 @@
-from domain.models.user import User
-from domain.entities.task import Task
-
-
 class Group:
-    def __init__(self, id_:int, leader_id:int, name:str, members_id:set[int]|None):
+    def __init__(self, id_:int, leader_id:int, name:str, members_id:set[int]|None = None):
         self._id = id_
-        self._leader = leader
-        self._members:set[int] = set(members) if members != None else set()
-        self._members.add(leader)
+        self._leader = leader_id
+        self._members:set[int] = set(members_id) if members_id != None else set()
+        self._members.add(leader_id)
         self._name = name
         
         
-    def add(self, actor:User, new_member:User):
+        
+    def add(self, actor:int, new_member:int):
         if actor != self._leader:
             raise PermissionError("Operation not allowed")
         elif new_member in self._members:
@@ -21,7 +18,7 @@ class Group:
         
         
 
-    def rem(self, actor:User, member:User):
+    def rem(self, actor:int, member:int):
         if actor != self._leader:
             raise PermissionError("Operation not allowed")
         elif member not in self._members:
@@ -30,7 +27,7 @@ class Group:
             self._members.remove(member)
         
         
-    def change_name(self, actor:User, name:str):
+    def change_name(self, actor:int, name:str):
         if actor != self._leader:
             raise PermissionError("Operation not allowed")
         

@@ -1,17 +1,17 @@
-import core.models
-from core.domain.entites.group import Group
+from core import models
+from core.domain.entities.group import Group
 
 class GroupRepository:
     def _mapping(self, group_orm:models.Group) -> Group:
         return Group(
             id_ = group_orm.id,
-            leader_id = group_orm.leader.id,
+            leader_id = group_orm.leader_id,
             name = group_orm.name, 
-            members_id = set(group.members.all(flat=True))
+            members_id = set(group_orm.members.all())
         )
         
-    def get(self, group_id):int:
-        return self._mapping(model.Group.objects.get(id=group_id))
+    def get(self, group_id:int) -> Group:
+        return self._mapping(models.Group.objects.get(id=group_id))
         
     
     def save(self, entity_group:Group):
@@ -21,8 +21,9 @@ class GroupRepository:
         else:
             group_orm = models.Group.objects.get(id=entity_group.id)
            
-        group_orm.leader = entity_group.leader
-        group_orm.members.add(i for i in entity_group.members)
+        group_orm.leader_id = entity_group.leader
         group_orm.name = entity_group.name
         group_orm.save()
+        group_orm.members.set(entity_group.members)
+        
     
