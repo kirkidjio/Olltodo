@@ -1,13 +1,13 @@
-from domain.aggregats.group import Group
-from domain.models.user import User
+from core.domain.entities.group import Group
+
 import pytest
 
 @pytest.fixture
 def group_and_some_users():
-    leader = User("leader", "123434")
-    operating_member = User("member", "123")
-    stranger = User("anonymouse", "qweret123")
-    group = Group(1, leader, "UI/UX Designers", [])
+    leader = 1
+    operating_member = 2
+    stranger = 3
+    group = Group(1, leader, "UI/UX Designers", set())
     
     return leader, operating_member, stranger, group
 
@@ -56,8 +56,3 @@ def test_can_leader_add_one_member_more_then_one_time(group_and_some_users):
         group.add(leader, operating_member)
         
 
-def test_can_leader_create_tasklist(group_and_some_users):
-    leader, operating_member, stranger, group = group_and_some_users
-    
-    group.create_tasklist(actor=leader, name="To do registration form")
-    assert len(group.tasklists) == 1

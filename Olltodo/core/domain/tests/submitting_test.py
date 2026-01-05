@@ -1,5 +1,5 @@
-from domain.entities.task import Task, TaskStatus
-from domain.models.user import User
+from core.domain.entities.task import Task, TaskStatus
+
 import pytest
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def users():
 
 def test_can_user_submit_his_task(users):
     leader, performer, stranger = users
-    task = Task(leader, performer)
+    task = Task(leader, performer, "abc")
     task.submit(performer)
     
     assert task._status == TaskStatus.SUBMITTED
@@ -20,7 +20,7 @@ def test_can_user_submit_his_task(users):
     
 def test_can_user_submit_not_his_task(users):
     leader, performer, stranger = users
-    task = Task(leader, performer)
+    task = Task(leader, performer, "abc")
     
     
     with pytest.raises(PermissionError):
@@ -29,7 +29,7 @@ def test_can_user_submit_not_his_task(users):
     
 def test_can_leader_reject_task(users):
     leader, performer, stranger = users
-    task = Task(leader, performer)
+    task = Task(leader, performer, "abc")
     task.submit(performer)
     task.reject(leader)
 
@@ -38,7 +38,7 @@ def test_can_leader_reject_task(users):
 
 def test_can_leader_accept_task(users):
     leader, performer, stranger = users
-    task = Task(leader, performer)
+    task = Task(leader, performer, "abc")
     task.submit(performer)
     task.accept(leader)
 
@@ -46,7 +46,7 @@ def test_can_leader_accept_task(users):
 
 def test_can_not_leader_accept_task(users):
     leader, performer, stranger = users
-    task = Task(leader, performer)
+    task = Task(leader, performer, "abc")
     task.submit(performer)
     
 

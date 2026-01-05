@@ -1,10 +1,11 @@
 from core import models
 from core.domain.entities.task import Task, TaskStatus, TaskPriority
-from core.repositories.interfaces import IRepositoryForTaskAndNote
+from core.repositories.interfaces import IRepositoryForTaskAndNotes
 
-class TaskRepository(IRepositoryForTaskAndNote):
-        
-    def _mapping(self, orm_task:models.Task):
+class TaskRepository(IRepositoryForTaskAndNotes):
+
+    @staticmethod
+    def _mapping(orm_task:models.Task):
         return Task(
             id_ = orm_task.id,
             checker_id = orm_task.tasklist.group.leader.id,
@@ -24,11 +25,11 @@ class TaskRepository(IRepositoryForTaskAndNote):
     
     def save(self, task:Task, tasklist_id:int = None):
         orm_task = None
-        if task.id == None:
+        if task.id is None and tasklist_id is not None:
             orm_task = models.Task()
             orm_task.tasklist_id = tasklist_id
         else:
-            if tasklist_id != None: raise PermissionError("You cant change tasklist for task")
+            if tasklist_id is None: raise PermissionError("You cant change tasklist for task")
             orm_task = models.Task.get(id=task.id)
         
         orm_task.performer_id = task.performer

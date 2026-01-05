@@ -2,7 +2,7 @@ class Group:
     def __init__(self, id_:int, leader_id:int, name:str, members_id:set[int]|None = None):
         self._id = id_
         self._leader = leader_id
-        self._members:set[int] = set(members_id) if members_id != None else set()
+        self._members:set[int] = set(members_id) if members_id is not None else set()
         self._members.add(leader_id)
         self._name = name
         

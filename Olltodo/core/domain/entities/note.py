@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-
-
 class Note:
     def __init__(self, creator_id:int, title:str, content:str = None, id_:int = None):
         self._id = id_
@@ -9,13 +6,13 @@ class Note:
         self._content = content
         
     def change_title(self, actor_id:int, new_title:str):
-        if actor != self._creator_id:
+        if actor_id != self._creator_id:
             raise PermissionError
         else:
             self._title = new_title
             
     def change_content(self, actor_id:int, new_content:str):
-        if actor != self._creator_id:
+        if actor_id != self._creator_id:
             raise PermissionError
         else:
             self._content = new_content

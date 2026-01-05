@@ -6,7 +6,7 @@ class IRepository(ABC):
     def get(self, id_):
         pass
         
-    def save(self):
+    def save(self, entity_obj):
         pass
         
     def delete(self, id_):
@@ -21,7 +21,7 @@ class IRepositoryForTaskAndNotes(ABC):
     def get_by_tasklist(self, id_):
         pass
         
-    def save(self, tasklist_id):
+    def save(self, entity_obj, tasklist_id):
         pass
         
     def delete(self, id_):

@@ -1,9 +1,10 @@
 from core.domain.entities.note import Note
 from core import models
-from core.repositories.interfaces import IRepositoryForTaskAndNote
+from core.repositories.interfaces import IRepositoryForTaskAndNotes
 
-class NoteRepository(IRepositoryForTaskAndNote):
-    def _mapping(self, orm_note:models.Note):
+class NoteRepository(IRepositoryForTaskAndNotes):
+    @staticmethod
+    def _mapping(orm_note:models.Note):
         return Note(
             id_ = orm_note.id,
             creator_id = orm_note.creator.id,
@@ -19,11 +20,11 @@ class NoteRepository(IRepositoryForTaskAndNote):
         
     def save(self, entity_note:Note, tasklist_id:int):
         note_orm = None
-        if entity_note.id == None:
+        if entity_note.id is None:
             note_orm = models.Note()
             note_orm.tasklist_id = tasklist_id
         else:
-            if tasklist_id != None: raise ValueError("You cant change tasklist for note")
+            if tasklist_id is not None: raise ValueError("You cant change tasklist for note")
             note_orm = models.Note.objects.get(id=entity_note.id)
            
         note_orm.title = entity_note.title
