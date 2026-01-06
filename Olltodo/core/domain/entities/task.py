@@ -1,13 +1,13 @@
-from enum import Enum
+from enum import Enum, StrEnum, IntEnum
 
-class TaskStatus(Enum):
+class TaskStatus(StrEnum):
     OPEN = "open"
     SUBMITTED = "submitted"
     ACCEPTED = "accepted"
     REJECTED = "rejected"
 
    
-class TaskPriority(Enum):
+class TaskPriority(IntEnum):
     HIGH = 3
     MEDIUM = 2
     LOW = 1
@@ -16,16 +16,16 @@ class TaskPriority(Enum):
 
 
 class Task:
-    def __init__(self, checker_id:int, performer_id:int, title:str, id_:int = None, status:TaskStatus = TaskStatus.OPEN, priority:TaskPriority=TaskPriority.NONE):
+    def __init__(self, checker_id:int, performer_id:int, title:str, id_:int = None, status = TaskStatus.OPEN, priority=TaskPriority.NONE):
         self._id : int = id_
         self._title = title
         self._checker_id = checker_id
         self._performer_id = performer_id
-        self._status:TaskStatus = status
-        self._priority:TaskPriority = priority
+        self._status = status
+        self._priority = priority
         
     def __gt__(self, other):
-        return self._priority.value > other._priority.value
+        return self._priority > other._priority
         
         
     def submit(self, performer):
@@ -71,7 +71,7 @@ class Task:
         
     @property
     def priority(self):
-        return self._priority.value
+        return self._priority
     
     @property
     def id(self):

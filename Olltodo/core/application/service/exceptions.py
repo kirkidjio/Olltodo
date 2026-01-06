@@ -6,3 +6,6 @@ class PerformerNotInGroup(Exception):
 
 class TaskListNotFound(Exception):
     pass
+
+class TaskNotFound(Exception):
+    pass

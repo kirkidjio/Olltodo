@@ -1,7 +1,7 @@
 from core.domain.entities import Task
 from core.domain.models.tasklist import TaskList
 
-from .exceptions import TaskListNotFound, NotGroupLeader, PerformerNotInGroup
+from .exceptions import *
 
 class CreateTask:
     def execute(self, actor_id, performer_id, title, tasklist_id, task_rep, group_rep, tasklist_rep):
@@ -15,3 +15,23 @@ class CreateTask:
 
         return task_rep.save(Task(actor_id, performer_id, title), tasklist_id)
 
+
+class ChangeTaskStatus:
+    def execute(self, task_id, actor_id, action, task_rep):
+        task = task_rep.get(task_id)
+        commands = {'submit': task.submit, 'reject':task.reject, 'accept':task.accept}
+        commands[action](actor_id)
+        return task_rep.save(task)
+
+class ChangeTaskPriority:
+    def execute(self, actor_id, task_id, priority, task_rep):
+        task = task_rep.get(task_id)
+        task.change_priority(actor_id, priority)
+        task_rep.save(task)
+
+
+class ChangeTaskTitle:
+    def execute(self, actor_id, task_id, title, task_rep):
+        task = task_rep.get(task_id)
+        task.change_title(actor_id, title)
+        task_rep.save(task)

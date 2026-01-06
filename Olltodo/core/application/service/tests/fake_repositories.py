@@ -22,8 +22,9 @@ class FakeGroupRepository(IRepository):
                 self._database[i] = entity_group
                 return
 
-        entity_group.id_ = self._database[-1].id + 1
-        self._database.append(entity_group)
+        new_group = entity_group
+        new_group._id = self._database[-1].id + 1
+        self._database.append(new_group)
 
 
     def delete(self, id_):
@@ -58,7 +59,7 @@ class FakeTaskListRepository(IRepository):
 
 class FakeTaskRepository(IRepositoryForTaskAndNotes):
 
-    def __init__(self, entities_tasks = []):
+    def __init__(self, entities_tasks:list):
         self._database = entities_tasks
 
 
@@ -72,13 +73,13 @@ class FakeTaskRepository(IRepositoryForTaskAndNotes):
             if i[1].id == id_: return i
         return None
 
-    def save(self, entity_task, tasklist_id):
+    def save(self, entity_task, tasklist_id=None):
         for i in range(0, len(self._database)):
             if self._database[i][0].id == entity_task.id:
                 self._database[i][0] = entity_task
                 return entity_task.id
 
-        entity_task.id_ = self._database[-1].id_ + 1 if len(self._database) > 0 else 1
+        entity_task.id_ = self._database[-1][0].id + 1 if len(self._database) > 0 else 1
         self._database.append([entity_task, tasklist_id])
         return entity_task.id
 
