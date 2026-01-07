@@ -4,7 +4,7 @@ from core.domain.entities.task import TaskStatus
 from core.domain.entities import Group, Task
 from core.domain.models.tasklist import TaskList
 from fake_repositories import FakeTaskRepository, FakeTaskListRepository, FakeGroupRepository
-from core.application.service.tasks import CreateTask, ChangeTaskStatus, ChangeTaskPriority, ChangeTaskTitle
+from core.application.service.tasks import CreateTask, ChangeTaskStatus, ChangeTaskPriority, ChangeTaskTitle, GetTasksByTasklist
 from core.application.service.exceptions import *
 
 
@@ -121,3 +121,16 @@ def test_change_task_title_happy_path(entities, repos):
         task_rep=repos['task_rep']
     )
     assert repos['task_rep'].get(1).title == new_title
+
+
+def test_get_task_by_tasklist_dict(repos):
+    task_info = GetTasksByTasklist().execute(tasklist_id=TASKLIST_EXISTING,
+                        actor_id=MEMBER,
+                        task_rep=repos['task_rep'],
+                        group_rep=repos['group_rep'],
+                        tasklist_rep=repos['tasklist_rep']
+    )
+    task = repos['task_rep'].get_by_tasklist(TASKLIST_EXISTING)
+
+    assert task_info[0]['id'] == task[0].id
+    assert task_info[0]['checker'] == task[0].checker

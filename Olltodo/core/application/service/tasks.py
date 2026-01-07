@@ -35,3 +35,19 @@ class ChangeTaskTitle:
         task = task_rep.get(task_id)
         task.change_title(actor_id, title)
         task_rep.save(task)
+
+class GetTasksByTasklist:
+    def execute(self, tasklist_id, actor_id, tasklist_rep, task_rep, group_rep):
+        tasklist = tasklist_rep.get(tasklist_id)
+        group = group_rep.get(tasklist.group_id)
+
+        if actor_id not in group.members: raise PermissionError("Actor cant receive tasks because his not in group")
+        tasks = task_rep.get_by_tasklist(tasklist_id)
+
+        return [{'id': task.id,
+                 'checker':task.checker,
+                 'performer':task.performer,
+                 'status':task.status,
+                 'priority':task.priority,
+                 'title':task.title} for task in tasks]
+

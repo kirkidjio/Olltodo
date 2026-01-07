@@ -69,9 +69,10 @@ class FakeTaskRepository(IRepositoryForTaskAndNotes):
         return None
 
     def get_by_tasklist(self, id_):
+        result = []
         for i in self._database:
-            if i[1].id == id_: return i
-        return None
+            if i[1] == id_: result.append(i[0])
+        return result
 
     def save(self, entity_task, tasklist_id=None):
         for i in range(0, len(self._database)):
@@ -79,9 +80,41 @@ class FakeTaskRepository(IRepositoryForTaskAndNotes):
                 self._database[i][0] = entity_task
                 return entity_task.id
 
-        entity_task.id_ = self._database[-1][0].id + 1 if len(self._database) > 0 else 1
+        entity_task._id = self._database[-1][0].id + 1 if len(self._database) > 0 else 1
         self._database.append([entity_task, tasklist_id])
         return entity_task.id
+
+    def delete(self, id_):
+        pass
+
+
+
+
+class FakeNoteRepository(IRepositoryForTaskAndNotes):
+
+    def __init__(self, entities_notes:list):
+        self._database = entities_notes
+
+
+    def get(self, id_):
+        for i in self._database:
+            if i[0].id == id_: return i[0]
+        return None
+
+    def get_by_tasklist(self, id_):
+        for i in self._database:
+            if i[1] == id_: return i
+        return None
+
+    def save(self, entity_note, tasklist_id=None):
+        for i in range(0, len(self._database)):
+            if self._database[i][0].id == entity_note.id:
+                self._database[i][0] = entity_note
+                return entity_note.id
+
+        entity_note._id = self._database[-1][0].id + 1 if len(self._database) > 0 else 1
+        self._database.append([entity_note, tasklist_id])
+        return entity_note.id
 
     def delete(self, id_):
         pass

@@ -30,7 +30,7 @@ class TaskRepository(IRepositoryForTaskAndNotes):
             orm_task.tasklist_id = tasklist_id
         else:
             if tasklist_id is None: raise PermissionError("You cant change tasklist for task")
-            orm_task = models.Task.get(id=task.id)
+            orm_task = models.Task.objects.get(id=task.id)
         
         orm_task.performer_id = task.performer
         orm_task.title = task.title
