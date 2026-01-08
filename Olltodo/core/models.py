@@ -8,13 +8,10 @@ class Group(models.Model):
     members = models.ManyToManyField(User, related_name="members")
     name = models.CharField(max_length=250)
     
-    
-    
+
 class TaskList(models.Model):
     name = models.CharField(max_length=250)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    
-
 
 
 class Task(models.Model):

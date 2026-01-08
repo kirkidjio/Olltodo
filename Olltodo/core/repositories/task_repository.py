@@ -16,20 +16,24 @@ class TaskRepository(IRepositoryForTaskAndNotes):
         )
         
     def get(self, task_id):
-        pass
+        return self._mapping(models.Task.objects.get(id=task_id))
     
         
     def get_by_tasklist(self, tasklist_id) -> list[Task]:
         obj = models.Task.objects.filter(tasklist=tasklist_id)
         return [self._mapping(i) for i in obj]
-    
+
+
+    def get_in_tasklist_by_performer(self, performer_id, tasklist_id):
+        obj = models.Task.objects.filter(performer_id=performer_id, tasklist_id=tasklist_id)
+        return [self._mapping(i) for i in obj]
+
     def save(self, task:Task, tasklist_id:int = None):
         orm_task = None
         if task.id is None and tasklist_id is not None:
             orm_task = models.Task()
             orm_task.tasklist_id = tasklist_id
         else:
-            if tasklist_id is None: raise PermissionError("You cant change tasklist for task")
             orm_task = models.Task.objects.get(id=task.id)
         
         orm_task.performer_id = task.performer

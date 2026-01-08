@@ -8,7 +8,7 @@ class GroupRepository(IRepository):
             id_ = group_orm.id,
             leader_id = group_orm.leader_id,
             name = group_orm.name, 
-            members_id = set(group_orm.members.all())
+            members_id = set(i.id for i in group_orm.members.all())
         )
         
     def get(self, group_id:int) -> Group:
