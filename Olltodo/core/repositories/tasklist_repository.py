@@ -14,14 +14,15 @@ class TaskListRepository:
         return self._mapping(models.TaskList.objects.get(id=tasklist_id))
         
     
-    def save(self, model_tasklist:TaskList, group_id:int):
+    def save(self, model_tasklist:TaskList):
         
         tasklist_orm = models.TaskList()   
         tasklist_orm.group_id = model_tasklist.group_id
         tasklist_orm.name = model_tasklist.name
         
         tasklist_orm.save()
-    
+
+        return tasklist_orm.id
         
 
 

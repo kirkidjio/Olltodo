@@ -28,7 +28,9 @@ def tasklist_in_db(db, group_in_db):
 
 @pytest.fixture
 def task_in_db(db, users, tasklist_in_db):
-    task1 = models.Task.objects.create(performer=users['member'], title='Berba', tasklist=tasklist_in_db, status='open', priority=0)
-    task2 = models.Task.objects.create(performer=users['member2'], title='Pepe', tasklist=tasklist_in_db, status='open', priority=0)
+   return {'task1' : models.Task.objects.create(performer=users['member'], title='Berba', tasklist=tasklist_in_db, status='open', priority=0),
+           'task2' : models.Task.objects.create(performer=users['member2'], title='Pepe', tasklist=tasklist_in_db, status='open', priority=0)}
 
-
+@pytest.fixture
+def note_in_db(db, users, tasklist_in_db):
+    return models.Note.objects.create(creator=users['member'],title="how to use api's", tasklist=tasklist_in_db, content="jojojojojo")

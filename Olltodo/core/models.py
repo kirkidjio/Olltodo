@@ -37,7 +37,7 @@ class Task(models.Model):
 
 class Note(models.Model):
     title = models.CharField()
-    content = models.TextField()
+    content = models.TextField(null=True)
     tasklist = models.ForeignKey(TaskList, on_delete=models.CASCADE)
     last_update = models.DateTimeField('last-update', auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)

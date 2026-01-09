@@ -16,21 +16,25 @@ class NoteRepository(IRepositoryForTaskAndNotes):
         return [self._mapping(i) for i in models.Note.objects.filter(tasklist=tasklist_id)]
         
     def get(self, note_id):
-        pass
-        
-    def save(self, entity_note:Note, tasklist_id:int):
+        return self._mapping(models.Note.objects.get(id=note_id))
+
+    def get_in_tasklist_by_performer(self, performer_id, tasklist_id):
+        obj = models.Note.objects.filter(performer_id=performer_id, tasklist_id=tasklist_id)
+        return [self._mapping(i) for i in obj]
+
+    def save(self, entity_note:Note, tasklist_id:int = None):
         note_orm = None
-        if entity_note.id is None:
+        if entity_note.id is None and tasklist_id is not None:
             note_orm = models.Note()
             note_orm.tasklist_id = tasklist_id
         else:
-            if tasklist_id is not None: raise ValueError("You cant change tasklist for note")
             note_orm = models.Note.objects.get(id=entity_note.id)
            
         note_orm.title = entity_note.title
         note_orm.content = entity_note.content
         note_orm.creator_id = entity_note.creator
         note_orm.save()
+        return note_orm.id
         
     def delete(self, note_id):
         pass

@@ -8,7 +8,7 @@ class CreateNote:
         if actor_id not in group.members: raise PermissionError(f"User cant create note for this group")
 
         note = Note(creator_id=actor_id, title=title)
-        note_rep.save(note)
+        return note_rep.save(note, tasklist_id)
 
 class ChangeTitleNote:
     def execute(self, note_id, actor_id, title, note_rep):
@@ -29,6 +29,19 @@ class GetNotesByTasklist:
 
         if actor_id not in group.members: raise PermissionError("Actor cant receive tasks because his not in group")
         notes = note_rep.get_by_tasklist(tasklist_id)
+
+        return [{'id': note.id,
+                 'creator':note.creator,
+                 'title':note.title,
+                 'content':note.content} for note in notes]
+
+class GetNotesByPerformer:
+    def execute(self, tasklist_id,performer_id ,actor_id, tasklist_rep, note_rep, group_rep):
+        tasklist = tasklist_rep.get(tasklist_id)
+        group = group_rep.get(tasklist.group_id)
+
+        if actor_id not in group.members: raise PermissionError("Actor cant receive tasks because his not in group")
+        notes = note_rep.get_in_tasklist_by_performer(tasklist_id, performer_id)
 
         return [{'id': note.id,
                  'creator':note.creator,

@@ -17,7 +17,7 @@ class GroupRepository(IRepository):
     
     def save(self, entity_group:Group):
         group_orm = None
-        if entity_group.id == None:
+        if entity_group.id is None:
             group_orm = models.Group()
         else:
             group_orm = models.Group.objects.get(id=entity_group.id)
@@ -26,5 +26,6 @@ class GroupRepository(IRepository):
         group_orm.name = entity_group.name
         group_orm.save()
         group_orm.members.set(entity_group.members)
+        return group_orm.id
         
     

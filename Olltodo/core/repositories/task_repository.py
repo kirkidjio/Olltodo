@@ -42,6 +42,7 @@ class TaskRepository(IRepositoryForTaskAndNotes):
         orm_task.priority = task.priority
 
         orm_task.save()
+        return orm_task.id
         
         
     def delete(self, task_id):

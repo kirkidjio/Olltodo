@@ -3,7 +3,7 @@ from core.domain.entities import Group
 class CreateGroup:
     def execute(self, actor_id, name, group_rep):
         new_group = Group(leader_id=actor_id, name=name)
-        group_rep.save(new_group)
+        return group_rep.save(new_group)
 
 class AddNewMemberGroup:
     def execute(self,group_id ,actor_id, new_member, group_rep):

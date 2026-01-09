@@ -5,6 +5,8 @@ class Group:
         self._members:set[int] = set(members_id) if members_id is not None else set()
         self._members.add(leader_id)
         self._name = name
+
+
         
         
         
@@ -19,6 +21,8 @@ class Group:
         
 
     def rem(self, actor:int, member:int):
+        print("DEBUG member:", member, type(member))
+        print("DEBUG members:", self._members)
         if actor != self._leader:
             raise PermissionError("Only leader can remove members")
         elif member not in self._members:
