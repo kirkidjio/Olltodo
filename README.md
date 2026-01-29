@@ -305,3 +305,278 @@ def create_task(...):
 
 ---
 
+# Dokumentacja kodu
+
+
+Dokumentacja skupia się wyłącznie na **implementacji**,
+bez teoretycznych rozważań.
+
+---
+
+## Warstwy aplikacji
+
+Projekt podzielony jest na cztery główne warstwy:
+
+1. **Domain** – logika biznesowa i reguły
+2. **Application / Service** – przypadki użycia (use cases)
+3. **Repositories** – dostęp do danych
+4. **API** – komunikacja HTTP (Django Ninja)
+
+---
+
+## 1. Warstwa domeny (`core/domain`)
+
+### Cel
+Warstwa domeny zawiera:
+- encje biznesowe,
+- reguły,
+- walidację,
+- zmiany stanu.
+
+Domena **nie zna**:
+- frameworków,
+- Django,
+- bazy danych,
+- HTTP.
+
+---
+
+### Encja `Group`
+
+**Plik:** `core/domain/entities/group.py`
+
+**Odpowiedzialność:**
+- przechowywanie informacji o grupie,
+- kontrola uprawnień lidera,
+- zarządzanie członkami.
+
+**Najważniejsze pola:**
+- `id`
+- `leader`
+- `members`
+- `name`
+
+**Najważniejsze metody:**
+- `add(actor_id, member_id)` – dodanie członka
+- `rem(actor_id, member_id)` – usunięcie członka
+- `change_name(actor_id, name)` – zmiana nazwy
+
+**Reguły:**
+- tylko lider może zmieniać grupę,
+- członkowie są unikalni.
+
+---
+
+### Encja `Task`
+
+**Plik:** `core/domain/entities/task.py`
+
+**Odpowiedzialność:**
+- przechowywanie stanu zadania,
+- kontrola przejść statusów,
+- walidacja akcji użytkownika.
+
+**Najważniejsze pola:**
+- `id`
+- `checker` (lider)
+- `performer`
+- `status`
+- `priority`
+- `title`
+
+**Metody zmiany stanu:**
+- `submit(actor_id)`
+- `accept(actor_id)`
+- `reject(actor_id)`
+
+**Reguły:**
+- performer może `submit`,
+- lider może `accept` / `reject`,
+- niedozwolone przejścia rzucają wyjątek.
+
+---
+
+### Encja `TaskList`
+
+**Plik:** `core/domain/models/tasklist.py`
+
+**Odpowiedzialność:**
+- reprezentowanie listy zadań,
+- powiązanie z grupą.
+
+**Pola:**
+- `id`
+- `name`
+- `group_id`
+
+TaskList **nie zawiera logiki zadań** – służy jako kontekst.
+
+---
+
+### Encja `Note`
+
+**Plik:** `core/domain/entities/note.py`
+
+**Odpowiedzialność:**
+- przechowywanie notatek,
+- kontrola edycji przez autora.
+
+**Reguły:**
+- tylko autor może edytować treść i tytuł.
+
+---
+
+## 2. Warstwa aplikacji / serwisów (`core/application/service`)
+
+### Cel
+Warstwa service:
+- realizuje konkretne przypadki użycia,
+- orkiestruje encje i repozytoria,
+- sprawdza uprawnienia między obiektami.
+
+Service **nie przechowuje stanu**.
+
+---
+
+### Zasada ogólna
+
+Każdy use case:
+- jest jedną klasą,
+- ma metodę `execute(...)`,
+- wykonuje **jedną akcję biznesową**.
+
+---
+
+### Task services (`tasks.py`)
+
+#### `CreateTask`
+
+- sprawdza istnienie tasklisty,
+- pobiera grupę,
+- sprawdza czy actor jest liderem,
+- sprawdza czy performer jest członkiem,
+- tworzy zadanie.
+
+---
+
+#### `ChangeTaskStatus`
+
+- pobiera zadanie,
+- wywołuje odpowiednią metodę domenową (`submit/accept/reject`),
+- zapisuje zmiany.
+
+Logika przejść **jest w domenie**, nie w serwisie.
+
+---
+
+#### `ChangeTaskPriority`
+#### `ChangeTaskTitle`
+
+- pobierają zadanie,
+- delegują walidację do encji,
+- zapisują wynik.
+
+---
+
+### Group services (`groups.py`)
+
+- `CreateGroup`
+- `AddNewMemberGroup`
+- `RemoveMemberGroup`
+- `ChangeNameGroup`
+
+Każdy serwis:
+- pobiera grupę,
+- wywołuje metodę encji,
+- zapisuje zmiany.
+
+---
+
+### TaskList services (`tasklist.py`)
+
+- `CreateTaskList`
+- sprawdza czy actor jest liderem grupy,
+- tworzy listę zadań przypisaną do grupy.
+
+---
+
+### Note services (`notes.py`)
+
+- `CreateNote`
+- `ChangeTitleNote`
+- `ChangeContentNote`
+- `GetNotesByPerformer`
+
+Serwisy notatek:
+- sprawdzają przynależność do grupy,
+- delegują walidację do encji `Note`.
+
+---
+
+## 3. Repozytoria (`core/repositories`)
+
+### Cel
+Repozytoria:
+- mapują Django ORM → encje domenowe,
+- zapisują zmiany do bazy,
+- ukrywają szczegóły persystencji.
+
+---
+
+### Zasady
+
+- repozytorium **nie zawiera logiki biznesowej**,
+- tylko CRUD + mapowanie,
+- encje domenowe nie znają ORM.
+
+---
+
+### Przykład: `TaskRepository`
+
+**Odpowiedzialność:**
+- pobieranie zadań z bazy,
+- mapowanie na encję `Task`,
+- zapisywanie zmian.
+
+**Metody:**
+- `get(id)`
+- `get_by_tasklist(tasklist_id)`
+- `get_in_tasklist_by_performer(...)`
+- `save(task, tasklist_id=None)`
+
+---
+
+## 4. Warstwa API (`core/api`)
+
+### Cel
+API:
+- odbiera request HTTP,
+- waliduje dane wejściowe (Schema),
+- wywołuje use case,
+- zwraca odpowiedź.
+
+API **nie zawiera logiki biznesowej**.
+
+---
+
+### Django Ninja
+
+- używane są `Schema` jako DTO,
+- autoryzacja przez `django_auth`,
+- odpowiedzi JSON.
+
+---
+
+### Przykład endpointu
+
+```python
+@api.patch('/task/{task_id}/{action}')
+def change_task_status(request, task_id, action):
+    ChangeTaskStatus().execute(
+        task_id=task_id,
+        actor_id=request.user.id,
+        action=action,
+        task_rep=TaskRepository()
+    )
+
+
