@@ -198,7 +198,7 @@ Testy:
 * Django ORM
 * Pytest
 
-```
+
 
 
 
@@ -233,14 +233,14 @@ Use case nie zna:
 ```python
 task = task_rep.get(task_id)
 task_rep.save(task)
-````
+
 
 **Korzyści:**
 
 * łatwiejsze testowanie,
 * mniejsza zależność od frameworka,
 * możliwość zmiany warstwy persystencji.
-
+```
 ---
 
 ### 2. **Command**
